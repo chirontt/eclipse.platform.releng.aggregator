@@ -29,11 +29,6 @@
       <unit id="org.junit" version="4.13.2.v20211018-1956"/>
       <unit id="org.junit.source" version="4.13.2.v20211018-1956"/>
 
-      <!-- specific (additional) to equinox sdk -->
-      <!-- Upstream maven artifact uses different slf4j.api SymbolicName. Customers needs to be updated -->
-      <unit id="org.slf4j.api" version="1.7.30.v20200204-2150"/>
-      <unit id="org.slf4j.api.source" version="1.7.30.v20200204-2150"/>
-
       <unit id="org.apache.lucene.core" version="8.4.1.v20200122-1459"/>
       <unit id="org.apache.lucene.analyzers-smartcn" version="8.4.1.v20200122-1459"/>
       <unit id="org.apache.lucene.analyzers-common" version="8.4.1.v20200122-1459"/>
@@ -47,17 +42,10 @@
       <unit id="javax.inject.source" version="1.0.0.v20220405-0441"/>
       <unit id="javax.xml" version="1.4.1.v20220503-2331"/>
 
-      <!-- PGP - See bug 570907 -->
-      <!-- Currently sticking to Orbit as upstream is jarsigned by a not rooted cert -->
-      <!-- We may remove it and use upstream from Central when we can have PGP signture
-        used for trust despite the jarsignature -->
-      <unit id="org.bouncycastle.bcpg" version="1.71.0.v20220723-1943"/>
-      <unit id="org.bouncycastle.bcprov" version="1.71.0.v20220723-1943"/>
-
       <!-- This is the "normal" Orbit repository. During development on Bug 568936 this repo is the EBR (git)
            sourced bundles of Orbit from 2022-03. This is the sub-p2-repo of the 2022-03 recommended build.
            This is the repo that is expected to be updated on milestones based on Orbit deliveries. -->
-      <repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20220830213456/repository/"/>
+      <repository location="https://download.eclipse.org/tools/orbit/downloads/drops/S20220927175816/repository/"/>
     </location>
     <location includeAllPlatforms="true" includeMode="slicer" type="InstallableUnit">
 
@@ -101,8 +89,8 @@
 
     <location includeAllPlatforms="true" includeMode="slicer" type="InstallableUnit">
        <!-- Check version in "<EMF>/features" directory -->
-      <unit id="org.eclipse.emf.common.feature.group" version="2.27.0.v20220817-1401"/>
-      <unit id="org.eclipse.emf.common.source.feature.group" version="2.27.0.v20220817-1401"/>
+      <unit id="org.eclipse.emf.common.feature.group" version="2.27.0.v20220908-0712"/>
+      <unit id="org.eclipse.emf.common.source.feature.group" version="2.27.0.v20220908-0712"/>
       <unit id="org.eclipse.emf.ecore.feature.group" version="2.29.0.v20220817-1401"/>
       <unit id="org.eclipse.emf.ecore.source.feature.group" version="2.29.0.v20220817-1401"/>
        <!-- For org.eclipse.ui.tools, and PDE's spy dependencies as of Eclipse 4.22 -->
@@ -113,7 +101,7 @@
       <unit id="org.eclipse.emf.databinding.source.feature.group" version="1.9.0.v20220517-0824"/>
       <unit id="org.eclipse.emf.databinding.edit.feature.group" version="1.9.0.v20210924-1718"/>
       <unit id="org.eclipse.emf.databinding.edit.source.feature.group" version="1.9.0.v20210924-1718"/>
-      <repository location="https://download.eclipse.org/modeling/emf/emf/builds/release/2.31/"/>
+      <repository location="https://download.eclipse.org/modeling/emf/emf/builds/milestone/S202209250929/"/>
     </location>
 
     <location includeAllPlatforms="true" includeMode="slicer" type="InstallableUnit">
@@ -212,6 +200,19 @@
 				  <type>jar</type>
 			  </dependency>
 			  <dependency>
+				  <groupId>org.slf4j</groupId>
+				  <artifactId>slf4j-api</artifactId>
+				  <version>1.7.36</version>
+				  <type>jar</type>
+			  </dependency>
+			  <!-- slf4j-api requires 1 impl, providing a dummy one... -->
+			  <dependency>
+				  <groupId>org.slf4j</groupId>
+				  <artifactId>slf4j-nop</artifactId>
+				  <version>1.7.36</version>
+				  <type>jar</type>
+			  </dependency>
+			  <dependency>
 				  <groupId>org.tukaani</groupId>
 				  <artifactId>xz</artifactId>
 				  <version>1.9</version>
@@ -231,12 +232,12 @@
 				<dependency>
 					<groupId>org.bouncycastle</groupId>
 					<artifactId>bcpg-jdk18on</artifactId>
-					<version>1.71</version>
+					<version>1.71.1</version>
 				</dependency>
 				<dependency>
 					<groupId>org.bouncycastle</groupId>
 					<artifactId>bcprov-jdk18on</artifactId>
-					<version>1.71</version>
+					<version>1.71.1</version>
 				</dependency>
 				<dependency>
 					<groupId>commons-io</groupId>
