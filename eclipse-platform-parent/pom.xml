@@ -252,7 +252,7 @@
             </artifact>
           </target>
           <environments>
-            <environment>
+            <!-- environment>
               <os>linux</os>
               <ws>gtk</ws>
               <arch>x86_64</arch>
@@ -266,13 +266,13 @@
               <os>linux</os>
               <ws>gtk</ws>
               <arch>aarch64</arch>
-            </environment>
+            </environment -->
             <environment>
               <os>win32</os>
               <ws>win32</ws>
               <arch>aarch64</arch>
             </environment>
-            <environment>
+            <!-- environment>
               <os>win32</os>
               <ws>win32</ws>
               <arch>x86_64</arch>
@@ -286,7 +286,7 @@
               <os>macosx</os>
               <ws>cocoa</ws>
               <arch>aarch64</arch>
-            </environment>
+            </environment -->
           </environments>
         </configuration>
       </plugin>

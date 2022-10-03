@@ -1,58 +1,77 @@
 # Touched, for Bug 398016 - [CBI] How to coordinate (or not) submodules with Git and EGit
 [submodule "eclipse.jdt"]
   path = eclipse.jdt
-  url = https://github.com/eclipse-jdt/eclipse.jdt.git
+  url = https://github.com/chirontt/eclipse.jdt
+  branch = build_only_win32_aarch64
 [submodule "eclipse.jdt.core"]
   path = eclipse.jdt.core
   url = https://github.com/eclipse-jdt/eclipse.jdt.core.git
+  branch = master
 [submodule "eclipse.jdt.core.binaries"]
   path = eclipse.jdt.core.binaries
   url = https://github.com/eclipse-jdt/eclipse.jdt.core.binaries.git
+  branch = master
 [submodule "eclipse.jdt.debug"]
   path = eclipse.jdt.debug
   url = https://github.com/eclipse-jdt/eclipse.jdt.debug.git
+  branch = master
 [submodule "eclipse.jdt.ui"]
   path = eclipse.jdt.ui
   url = https://github.com/eclipse-jdt/eclipse.jdt.ui.git
+  branch = master
 [submodule "eclipse.pde"]
 	path = eclipse.pde
 	url = https://github.com/eclipse-pde/eclipse.pde.git
+	branch = master
 [submodule "eclipse.platform"]
   path = eclipse.platform
   url = https://github.com/chirontt/eclipse.platform
+  branch = build_only_win32_aarch64
 [submodule "eclipse.platform.common"]
   path = eclipse.platform.common
   url = https://github.com/eclipse-platform/eclipse.platform.common.git
+  branch = master
 [submodule "eclipse.platform.debug"]
   path = eclipse.platform.debug
   url = https://github.com/eclipse-platform/eclipse.platform.debug.git
+  branch = master
 [submodule "eclipse.platform.releng"]
   path = eclipse.platform.releng
   url = https://github.com/chirontt/eclipse.platform.releng
+  branch = build_only_win32_aarch64
 [submodule "eclipse.platform.swt"]
   path = eclipse.platform.swt
   url = https://github.com/chirontt/eclipse.platform.swt
+  branch = master
 [submodule "eclipse.platform.swt.binaries"]
   path = eclipse.platform.swt.binaries
   url = https://github.com/chirontt/eclipse.platform.swt.binaries
+  branch = master
 [submodule "eclipse.platform.text"]
   path = eclipse.platform.text
   url = https://github.com/eclipse-platform/eclipse.platform.text.git
+  branch = master
 [submodule "eclipse.platform.ua"]
   path = eclipse.platform.ua
   url = https://github.com/eclipse-platform/eclipse.platform.ua.git
+  branch = master
 [submodule "eclipse.platform.ui"]
   path = eclipse.platform.ui
   url = https://github.com/chirontt/eclipse.platform.ui
+  branch = build_only_win32_aarch64
 [submodule "rt.equinox.binaries"]
   path = rt.equinox.binaries
   url = https://github.com/chirontt/equinox.binaries
+  branch = master
 [submodule "equinox"]
   path = equinox
   url = https://github.com/chirontt/equinox
+  branch = build_only_win32_aarch64
 [submodule "rt.equinox.p2"]
   path = rt.equinox.p2
   url = https://github.com/chirontt/p2
+  branch = build_only_win32_aarch64
 [submodule "eclipse.platform.ui.tools"]
   path = eclipse.platform.ui.tools
   url = https://github.com/eclipse-platform/eclipse.platform.ui.tools.git
+  branch = master
