@@ -3,6 +3,7 @@ pipeline {
 		timeout(time: 240, unit: 'MINUTES')
 		buildDiscarder(logRotator(numToKeepStr:'5'))
 		disableConcurrentBuilds(abortPrevious: true)
+		timestamps()
 	}
 	agent {
 		label "centos-latest"
@@ -25,6 +26,18 @@ pipeline {
 				sh 'git submodule foreach "git fetch origin master; git checkout FETCH_HEAD"'
 			}
 		}
+		stage('Deploy eclipse-platform-parent pom and eclipse-sdk target') {
+			when {
+				anyOf {
+					branch 'master'
+					branch 'R*_maintenance'
+				}
+			}
+			steps {
+				sh 'mvn clean deploy -f eclipse-platform-parent/pom.xml'
+				sh 'mvn clean deploy -f eclipse.platform.releng.prereqs.sdk/pom.xml'
+			}
+		}
 		stage('Build') {
 			steps {
 				withCredentials([string(credentialsId: 'gpg-passphrase', variable: 'KEYRING_PASSPHRASE')]) {
@@ -41,7 +54,11 @@ pipeline {
 			}
 			post {
 				always {
-					archiveArtifacts artifacts: '.*log,*/target/work/data/.metadata/.*log,*/tests/target/work/data/.metadata/.*log,apiAnalyzer-workspace/.metadata/.*log,eclipse.platform.releng.tychoeclipsebuilder/eclipse.platform.repository/target/repository/*', allowEmptyArchive: true
+					archiveArtifacts allowEmptyArchive: true, artifacts: '\
+						.*log,*/target/work/data/.metadata/.*log,\
+						*/tests/target/work/data/.metadata/.*log,\
+						apiAnalyzer-workspace/.metadata/.*log,\
+						eclipse.platform.releng.tychoeclipsebuilder/eclipse.platform.repository/target/repository/*'
 				}
 			}
 		}

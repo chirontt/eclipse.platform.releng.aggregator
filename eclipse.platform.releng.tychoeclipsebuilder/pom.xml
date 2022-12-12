@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.eclipse</groupId>
     <artifactId>eclipse-platform-parent</artifactId>
-    <version>4.26.0-SNAPSHOT</version>
+    <version>4.27.0-SNAPSHOT</version>
     <relativePath>../eclipse-platform-parent</relativePath>
   </parent>
 
@@ -48,6 +48,18 @@
 						<forceSignature>
 							<bundle>bcpg</bundle>
 							<bundle>bcprov</bundle>
+							<bundle>com.sun.el.source</bundle>
+							<bundle>com.sun.el</bundle>
+							<bundle>javax.el.source</bundle>
+							<bundle>javax.el</bundle>
+							<bundle>org.apache.commons.codec.source</bundle>
+							<bundle>org.apache.commons.codec</bundle>
+							<bundle>org.apache.commons.jxpath.source</bundle>
+							<bundle>org.apache.commons.jxpath</bundle>
+							<bundle>org.apache.jasper.glassfish.source</bundle>
+							<bundle>org.apache.jasper.glassfish</bundle>
+							<bundle>org.w3c.dom.smil.source</bundle>
+							<bundle>org.w3c.dom.smil</bundle>
 						</forceSignature>
 					</configuration>
 				</plugin>

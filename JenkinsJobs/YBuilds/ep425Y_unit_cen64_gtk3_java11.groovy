@@ -1,4 +1,4 @@
-pipelineJob('AutomatedTests/ep425Y-unit-cen64-gtk3-java17'){
+pipelineJob('AutomatedTests/ep425Y-unit-cen64-gtk3-java11'){
 
   logRotator {
     numToKeep(5)
@@ -6,7 +6,7 @@ pipelineJob('AutomatedTests/ep425Y-unit-cen64-gtk3-java17'){
 
   parameters {
     stringParam('buildId', null, null)
-    stringParam('javaDownload', 'https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz', null)
+    stringParam('javaDownload', 'https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz', null)
   }
 
   definition {
@@ -21,7 +21,7 @@ pipeline {
 	}
   agent {
     kubernetes {
-      label 'centos-unitpod17'
+      label 'centos-unitpodJava11'
       defaultContainer 'custom'
       yaml """
 apiVersion: v1
@@ -30,19 +30,19 @@ spec:
   containers:
   - name: "jnlp"
     resources:
-      limits:
-        memory: "2048Mi"
-        cpu: "2000m"
       requests:
-        memory: "512Mi"
-        cpu: "1000m"
+        cpu: "100m"
+        memory: "1024Mi"
+      limits:
+        cpu: "100m"
+        memory: "1024Mi"
   - name: "custom"
     image: "eclipse/platformreleng-centos-gtk3-metacity:8"
     imagePullPolicy: "Always"
     resources:
       limits:
-        memory: "4096Mi"
-        cpu: "1000m"
+        memory: "6144Mi"
+        cpu: "2000m"
       requests:
         memory: "512Mi"
         cpu: "1000m"
@@ -81,7 +81,7 @@ spec:
           steps {
               container ('custom'){
                   wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
-                      withEnv(["JAVA_HOME_NEW=${ tool 'openjdk-jdk15-latest' }"]) {
+                      withEnv(["JAVA_HOME_NEW=${ tool 'adoptopenjdk-hotspot-latest-lts' }"]) {
                           withAnt(installation: 'apache-ant-latest') {
                               sh \'\'\'#!/bin/bash -x
                                 
@@ -106,6 +106,7 @@ spec:
                                 mkdir -p ${WORKSPACE}/tmp
                                 
                                 wget -O ${WORKSPACE}/getEBuilder.xml --no-verbose --no-check-certificate https://download.eclipse.org/eclipse/relengScripts/production/testScripts/hudsonBootstrap/getEBuilder.xml 2>&1
+                                cat ${WORKSPACE}/getEBuilder.xml
                                 wget -O ${WORKSPACE}/buildproperties.shsource --no-check-certificate https://download.eclipse.org/eclipse/downloads/drops4/${buildId}/buildproperties.shsource
                                 cat ${WORKSPACE}/buildproperties.shsource
                                 source ${WORKSPACE}/buildproperties.shsource
@@ -120,7 +121,7 @@ spec:
                                 popd
                                 set +x
                                 
-                                export PATH=${JAVA_HOME_NEW}/bin:${ANT_HOME}/bin:${PATH}                                
+                                export PATH=${JAVA_HOME_NEW}/bin:${ANT_HOME}/bin:${PATH} 
                                 
                                 echo JAVA_HOME: $JAVA_HOME
                                 export JAVA_HOME=$JAVA_HOME_NEW
@@ -145,10 +146,10 @@ spec:
                           }
                       }
                   }
+                  junit keepLongStdio: true, testResults: '**/eclipse-testing/results/xml/*.xml'
               }
               archiveArtifacts '**/eclipse-testing/results/**, **/eclipse-testing/directorLogs/**, *.properties, *.txt'
-              junit keepLongStdio: true, testResults: '**/eclipse-testing/results/xml/*.xml'
-              build job: 'ep-collectYbuildResults', parameters: [string(name: 'triggeringJob', value: "${JOB_NAME}"), string(name: 'triggeringBuildNumber', value: "${BUILD_NUMBER}"), string(name: 'buildId', value: "${params.buildId}")], wait: false
+              build job: 'Releng/ep-collectYbuildResults', parameters: [string(name: 'triggeringJob', value: "${JOB_BASE_NAME}"), string(name: 'triggeringBuildNumber', value: "${BUILD_NUMBER}"), string(name: 'buildId', value: "${params.buildId}")], wait: false
           }
       }
   }

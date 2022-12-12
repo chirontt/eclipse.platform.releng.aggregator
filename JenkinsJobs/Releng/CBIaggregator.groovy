@@ -10,7 +10,7 @@ job('Releng/CBIaggregator'){
     choiceParam('snapshotOrRelease', ['release', 'snapshot'], null)
   }
 
-  label('migration')
+  label('centos-latest')
 
   jdk('openjdk-jdk11-latest')
 
@@ -19,7 +19,7 @@ job('Releng/CBIaggregator'){
       remote{
         name('origin')
         url('git@github.com:eclipse-platform/eclipse.platform.releng.git')
-        credentials('GitHub bot (SSH)')
+        credentials('github-bot-ssh')
       }
       branch('master')
       browser {
@@ -41,7 +41,7 @@ job('Releng/CBIaggregator'){
   wrappers { //adds pre/post actions
     preBuildCleanup()
     timestamps()
-    sshAgent('ssh://genie.releng@projects-storage.eclipse.org', 'ssh://genie.releng@git.eclipse.org', 'GitHub bot (SSH)')
+    sshAgent('projects-storage.eclipse.org-bot-ssh', 'git.eclipse.org-bot-ssh', 'github-bot-ssh')
   }
   
   steps {
@@ -68,6 +68,18 @@ ${SCRIPT} ${snapshotOrRelease}
   publishers {
     downstreamParameterized {
       trigger('Releng/PublishJDTtoMaven') {
+        condition('SUCCESS')
+        parameters {
+          predefinedProp('REPO_ID', '${BUILD_NUMBER}')
+        }
+      }
+      trigger('Releng/PublishPDEtoMaven') {
+        condition('SUCCESS')
+        parameters {
+          predefinedProp('REPO_ID', '${BUILD_NUMBER}')
+        }
+      }
+      trigger('Releng/PublishPlatformtoMaven') {
         condition('SUCCESS')
         parameters {
           predefinedProp('REPO_ID', '${BUILD_NUMBER}')

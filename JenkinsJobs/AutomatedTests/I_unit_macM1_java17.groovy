@@ -1,31 +1,37 @@
-job('AutomatedTests/ep425Y-unit-macM1-java17'){
-  description('Run Eclipse SDK Tests for 64 bit Mac (and 64 bit VM and Eclipse)')
+def config = new groovy.json.JsonSlurper().parseText(readFileFromWorkspace('JenkinsJobs/JobDSL.json'))
+def STREAMS = config.Streams
 
-  logRotator {
-    numToKeep(5)
-  }
+for (STREAM in STREAMS){
+  def MAJOR = STREAM.split('\\.')[0]
+  def MINOR = STREAM.split('\\.')[1]
 
-  parameters {
-    stringParam('buildId', null, 'Build Id to test (such as I20120717-0800, N20120716-0800). ')
-    stringParam('testSuite', 'all', null)
-  }
+  job('AutomatedTests/ep' + MAJOR + MINOR + 'I-unit-macM1-java17'){
+    description('Run Eclipse SDK Tests for 64 bit Mac (and 64 bit VM and Eclipse)')
 
-
-  label('nc1ht-macos11-arm64')
-
-  jdk('openjdk-jdk11-latest')
-
-  authenticationToken('windows2012tests')
- 
-  wrappers { //adds pre/post actions
-    timestamps()
-    timeout {
-      absolute(600)
+    logRotator {
+      numToKeep(5)
     }
-  }
+
+    parameters {
+      stringParam('buildId', null, 'Build Id to test (such as I20120717-0800, N20120716-0800). ')
+      stringParam('testSuite', 'all', null)
+    }
+
+    label('nc1ht-macos11-arm64')
+
+    jdk('openjdk-jdk11-latest')
+
+    authenticationToken('windows2012tests')
+ 
+    wrappers { //adds pre/post actions
+      timestamps()
+      timeout {
+        absolute(600)
+      }
+    }
   
-  steps {
-    shell('''
+    steps {
+      shell('''
 #!/usr/bin/env bash
 
 if [[ -z "${WORKSPACE}" ]]
@@ -68,8 +74,8 @@ fi
 echo -e "\\t... ending cleaning"
 
 exit 0
-    ''')
-    shell('''
+      ''')
+      shell('''
 #!/bin/bash -x
 
 RAW_DATE_START="$(date +%s )"
@@ -115,7 +121,7 @@ env  1>envVars.txt 2>&1
 ant -diagnostics  1>antDiagnostics.txt 2>&1
 java -XshowSettings -version  1>javaSettings.txt 2>&1
 
-ant -f getEBuilder.xml -Djava.io.tmpdir=${WORKSPACE}/tmp -DbuildId=$buildId  -DeclipseStream=$STREAM -DEBUILDER_HASH=${EBUILDER_HASH}  -DdownloadURL=http://download.eclipse.org/eclipse/downloads/drops4/${buildId}  -Dosgi.os=macosx -Dosgi.ws=cocoa -Dosgi.arch=aarch64 -DtestSuite=${testSuite}
+ant -f getEBuilder.xml -Djava.io.tmpdir=${WORKSPACE}/tmp -DbuildId=$buildId  -DeclipseStream=$STREAM -DEBUILDER_HASH=${EBUILDER_HASH}  -DdownloadURL=https://download.eclipse.org/eclipse/downloads/drops4/${buildId}  -Dosgi.os=macosx -Dosgi.ws=cocoa -Dosgi.arch=aarch64 -DtestSuite=${testSuite}
 
 RAW_DATE_END="$(date +%s )"
 
@@ -124,28 +130,28 @@ echo -e "\\n\\tRAW Date End: ${RAW_DATE_END} \\n"
 TOTAL_TIME=$((${RAW_DATE_END} - ${RAW_DATE_START}))
 
 echo -e "\\n\\tTotal elapsed time: ${TOTAL_TIME} \\n"
+      ''')
+    }
 
-    ''')
-  }
-
-  publishers {
-    archiveJunit('**/eclipse-testing/results/xml/*.xml') {
-      retainLongStdout()
-      healthScaleFactor((1.0).doubleValue())
-    }
-    archiveArtifacts {
-      pattern('**/eclipse-testing/results/**, **/eclipse-testing/directorLogs/**, *.properties, *.txt')
-    }
-    extendedEmail {
-      recipientList("sravankumarl@in.ibm.com")
-    }
-    downstreamParameterized {
-      trigger('ep-collectYbuildResults') {
-        condition('UNSTABLE_OR_BETTER')
-        parameters {
-          predefinedProp('triggeringJob', '$JOB_NAME')
-          predefinedProp('triggeringBuildNumber', '$BUILD_NUMBER')
-          predefinedProp('buildId', '$buildId')
+    publishers {
+      archiveJunit('**/eclipse-testing/results/xml/*.xml') {
+        retainLongStdout()
+        healthScaleFactor((1.0).doubleValue())
+      }
+      archiveArtifacts {
+        pattern('**/eclipse-testing/results/**, **/eclipse-testing/directorLogs/**, *.properties, *.txt')
+      }
+      extendedEmail {
+        recipientList("sravankumarl@in.ibm.com")
+      }
+      downstreamParameterized {
+        trigger('Releng/ep-collectResults') {
+          condition('UNSTABLE_OR_BETTER')
+          parameters {
+            predefinedProp('triggeringJob', '$JOB_BASE_NAME')
+            predefinedProp('buildURL', '$BUILD_URL')
+            predefinedProp('buildID', '$buildId')
+          }
         }
       }
     }

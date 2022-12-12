@@ -25,7 +25,7 @@ job('Releng/ep-collectYbuildResults'){
   wrappers { //adds pre/post actions
     timestamps()
     preBuildCleanup()
-    sshAgent('ssh://genie.releng@git.eclipse.org', 'ssh://genie.releng@projects-storage.eclipse.org')
+    sshAgent('git.eclipse.org-bot-ssh', 'projects-storage.eclipse.org-bot-ssh')
     xvnc {
       useXauthority()
     }
@@ -54,9 +54,9 @@ buildDir=${dropsPath}/${buildId}
 
 workingDir=${epDownloadDir}/workingDir
 
-workspace=${workingDir}/${JOB_NAME}-${BUILD_NUMBER}
+workspace=${workingDir}/${JOB_BASE_NAME}-${BUILD_NUMBER}
 
-ssh genie.releng@projects-storage.eclipse.org rm -rf ${workingDir}/${JOB_NAME}*
+ssh genie.releng@projects-storage.eclipse.org rm -rf ${workingDir}/${JOB_BASE_NAME}*
 
 ssh genie.releng@projects-storage.eclipse.org mkdir -p ${workspace}
 ssh genie.releng@projects-storage.eclipse.org cd ${workspace}
@@ -77,7 +77,6 @@ ssh genie.releng@projects-storage.eclipse.org rm -rf ${workspace}/eclipse
 
 #get requisite tools
 ssh genie.releng@projects-storage.eclipse.org wget -O ${workspace}/collectTestResults.xml https://raw.githubusercontent.com/eclipse-platform/eclipse.platform.releng.aggregator/master/cje-production/scripts/collectTestResults.xml
-ssh genie.releng@projects-storage.eclipse.org wget -O ${workspace}/genTestIndexes.xml https://raw.githubusercontent.com/eclipse-platform/eclipse.platform.releng.aggregator/master/cje-production/scripts/genTestIndexes.xml
 ssh genie.releng@projects-storage.eclipse.org wget -O ${workspace}/publish.xml https://raw.githubusercontent.com/eclipse-platform/eclipse.platform.releng.aggregator/master/cje-production/Y-build/publish.xml
 
 cd ${WORKSPACE}
@@ -117,7 +116,7 @@ ssh genie.releng@projects-storage.eclipse.org  ${javaCMD} -jar ${launcherJar} -n
 
 
 #Delete Workspace
-ssh genie.releng@projects-storage.eclipse.org rm -rf ${workingDir}/${JOB_NAME}*
+ssh genie.releng@projects-storage.eclipse.org rm -rf ${workingDir}/${JOB_BASE_NAME}*
     ''')
   }
 

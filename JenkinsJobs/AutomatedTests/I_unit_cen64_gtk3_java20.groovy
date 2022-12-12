@@ -1,18 +1,25 @@
-pipelineJob('AutomatedTests/ep426I-unit-cen64-gtk3-java11'){
+def config = new groovy.json.JsonSlurper().parseText(readFileFromWorkspace('JenkinsJobs/JobDSL.json'))
+def STREAMS = config.Streams
 
-  logRotator {
-    numToKeep(5)
-  }
+for (STREAM in STREAMS){
+  def MAJOR = STREAM.split('\\.')[0]
+  def MINOR = STREAM.split('\\.')[1]
 
-  parameters {
-    stringParam('buildId', null, null)
-    stringParam('javaDownload', 'https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz', null)
-  }
+  pipelineJob('AutomatedTests/ep' + MAJOR + MINOR + 'I-unit-cen64-gtk3-java20'){
 
-  definition {
-    cps {
-      sandbox()
-      script('''
+    logRotator {
+      numToKeep(5)
+    }
+
+    parameters {
+      stringParam('buildId', null, null)
+      stringParam('javaDownload', 'https://download.java.net/java/early_access/jdk20/23/GPL/openjdk-20-ea+23_linux-x64_bin.tar.gz', null)
+    }
+
+    definition {
+      cps {
+        sandbox()
+        script('''
 pipeline {
 	options {
 		timeout(time: 600, unit: 'MINUTES')
@@ -21,7 +28,7 @@ pipeline {
 	}
   agent {
     kubernetes {
-      label 'centos-unitpodJava11'
+      label 'centos-unitpod19'
       defaultContainer 'custom'
       yaml """
 apiVersion: v1
@@ -30,19 +37,19 @@ spec:
   containers:
   - name: "jnlp"
     resources:
-      requests:
-        cpu: "100m"
-        memory: "1024Mi"
       limits:
-        cpu: "100m"
-        memory: "1024Mi"
+        memory: "2048Mi"
+        cpu: "2000m"
+      requests:
+        memory: "512Mi"
+        cpu: "1000m"
   - name: "custom"
     image: "eclipse/platformreleng-centos-gtk3-metacity:8"
     imagePullPolicy: "Always"
     resources:
       limits:
-        memory: "6144Mi"
-        cpu: "2000m"
+        memory: "4096Mi"
+        cpu: "1000m"
       requests:
         memory: "512Mi"
         cpu: "1000m"
@@ -81,7 +88,7 @@ spec:
           steps {
               container ('custom'){
                   wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
-                      withEnv(["JAVA_HOME_NEW=${ tool 'adoptopenjdk-hotspot-latest-lts' }"]) {
+                      withEnv(["JAVA_HOME_NEW=${ tool 'openjdk-jdk18-latest' }"]) {
                           withAnt(installation: 'apache-ant-latest') {
                               sh \'\'\'#!/bin/bash -x
                                 
@@ -106,7 +113,6 @@ spec:
                                 mkdir -p ${WORKSPACE}/tmp
                                 
                                 wget -O ${WORKSPACE}/getEBuilder.xml --no-verbose --no-check-certificate https://download.eclipse.org/eclipse/relengScripts/production/testScripts/hudsonBootstrap/getEBuilder.xml 2>&1
-                                cat ${WORKSPACE}/getEBuilder.xml
                                 wget -O ${WORKSPACE}/buildproperties.shsource --no-check-certificate https://download.eclipse.org/eclipse/downloads/drops4/${buildId}/buildproperties.shsource
                                 cat ${WORKSPACE}/buildproperties.shsource
                                 source ${WORKSPACE}/buildproperties.shsource
@@ -121,19 +127,19 @@ spec:
                                 popd
                                 set +x
                                 
-                                export PATH=${JAVA_HOME_NEW}/bin:${ANT_HOME}/bin:${PATH} 
+                                export PATH=${JAVA_HOME_NEW}/bin:${ANT_HOME}/bin:${PATH}                                
                                 
                                 echo JAVA_HOME: $JAVA_HOME
                                 export JAVA_HOME=$JAVA_HOME_NEW
                                 echo ANT_HOME: $ANT_HOME
                                 echo PATH: $PATH
-                                export ANT_OPTS="${ANT_OPTS} -Djava.io.tmpdir=${WORKSPACE}/tmp"
+                                export ANT_OPTS="${ANT_OPTS} -Djava.io.tmpdir=${WORKSPACE}/tmp -Djava.security.manager=allow"
                                 
                                 env 1>envVars.txt 2>&1
                                 ant -diagnostics 1>antDiagnostics.txt 2>&1
                                 java -XshowSettings -version 1>javaSettings.txt 2>&1
                                 
-                                ant -f getEBuilder.xml -Djava.io.tmpdir=${WORKSPACE}/tmp -DbuildId=$buildId  -DeclipseStream=$STREAM -DEBUILDER_HASH=${EBUILDER_HASH}  -DdownloadURL=http://download.eclipse.org/eclipse/downloads/drops4/${buildId}  -Dosgi.os=linux -Dosgi.ws=gtk -Dosgi.arch=x86_64 -DtestSuite=all -Djvm=${JAVA_HOME}/bin/java
+                                ant -f getEBuilder.xml -Djava.io.tmpdir=${WORKSPACE}/tmp -DbuildId=$buildId  -DeclipseStream=$STREAM -DEBUILDER_HASH=${EBUILDER_HASH}  -DdownloadURL=https://download.eclipse.org/eclipse/downloads/drops4/${buildId}  -Dosgi.os=linux -Dosgi.ws=gtk -Dosgi.arch=x86_64 -DtestSuite=all -Djvm=${JAVA_HOME}/bin/java
                                 
                                 RAW_DATE_END="$(date +%s )"
                                 
@@ -146,15 +152,30 @@ spec:
                           }
                       }
                   }
-                  junit keepLongStdio: true, testResults: '**/eclipse-testing/results/xml/*.xml'
               }
               archiveArtifacts '**/eclipse-testing/results/**, **/eclipse-testing/directorLogs/**, *.properties, *.txt'
-              build job: 'ep-collectResults', parameters: [string(name: 'triggeringJob', value: "${JOB_NAME}"), string(name: 'triggeringBuildNumber', value: "${BUILD_NUMBER}"), string(name: 'buildId', value: "${params.buildId}")], wait: false
+              junit keepLongStdio: true, testResults: '**/eclipse-testing/results/xml/*.xml'
           }
       }
   }
+  post {
+    failure {
+      emailext body: "Please go to <a href='${BUILD_URL}console'>${BUILD_URL}console</a> and check the build failure.<br><br>",
+      subject: "Java 20 Tests - BUILD FAILED", 
+      to: "akurtako@redhat.com",
+      from:"genie.releng@eclipse.org"
+    }
+    success {
+      emailext body: "Link: <a href='${BUILD_URL}'>${BUILD_URL}</a> <br><br>",
+      subject: "Java 20 Tests - BUILD SUCCESS", 
+      to: "akurtako@redhat.com",
+      from:"genie.releng@eclipse.org"
+    }
+	}
 }
-      ''')
+        ''')
+      }
     }
   }
 }
+

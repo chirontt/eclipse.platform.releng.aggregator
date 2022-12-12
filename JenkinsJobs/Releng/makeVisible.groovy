@@ -20,6 +20,10 @@ It must match the name of the build on the build machine.
 This is the build type we are promoting TO. 
 I-builds promote to 'S' until 'R'. 
     ''')
+    stringParam('TAG', null, ''' For passing to the tagEclipseRelease job.
+R is used for release builds. For example: R4_25
+S is used for milestones and includes the milestone version. For example: S4_25_0_RC2
+    ''')
   }
 
   logRotator {
@@ -32,7 +36,7 @@ I-builds promote to 'S' until 'R'.
 
   wrappers { //adds pre/post actions
     timestamps()
-    sshAgent('ssh://genie.releng@projects-storage.eclipse.org', 'ssh://genie.releng@git.eclipse.org', 'GitHub bot (SSH)')
+    sshAgent('projects-storage.eclipse.org-bot-ssh', 'git.eclipse.org-bot-ssh', 'github-bot-ssh')
     timeout {
       absolute(60)
     }
@@ -61,3 +65,4 @@ ${WORKSPACE}/makeVisible.sh
     }
   }
 }
+

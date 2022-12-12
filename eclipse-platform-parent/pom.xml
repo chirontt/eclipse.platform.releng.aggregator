@@ -19,7 +19,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.eclipse</groupId>
   <artifactId>eclipse-platform-parent</artifactId>
-  <version>4.26.0-SNAPSHOT</version>
+  <version>4.27.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <!--
     See maven-enforcer-plugin configuration to actually break the build if
@@ -49,7 +49,7 @@
       such as Version: Mars (4.5), for main features.
       See bug 328139.
     -->
-    <releaseName>2022-12</releaseName>
+    <releaseName>2023-03</releaseName>
     <!--
       The releaseNumbers below, for SDK and Platform, might be
       thought of as the "marketing number" or "branding number",
@@ -64,12 +64,12 @@
       but we'd still want the "marketing number" to be increased to reflect
       "a new yearly release".
     -->
-    <releaseNumberSDK>4.26</releaseNumberSDK>
-    <releaseNumberPlatform>4.26</releaseNumberPlatform>
+    <releaseNumberSDK>4.27</releaseNumberSDK>
+    <releaseNumberPlatform>4.27</releaseNumberPlatform>
 
-    <tycho.version>3.1.0-SNAPSHOT</tycho.version>
+    <tycho.version>4.0.0-SNAPSHOT</tycho.version>
 
-    <cbi-plugins.version>1.3.2</cbi-plugins.version>
+    <cbi-plugins.version>1.3.4</cbi-plugins.version>
     <surefire.version>3.0.0-M7</surefire.version>
 
     <!--  
@@ -77,16 +77,16 @@
       'eclipiserun-repo' repository, such as for computing .api-descriptions and
       generating API Tools reports.
     -->
-    <eclipserun-repo>https://download.eclipse.org/eclipse/updates/4.26-I-builds/</eclipserun-repo>
+    <eclipserun-repo>https://download.eclipse.org/eclipse/updates/4.27-I-builds/</eclipserun-repo>
     
-    <comparator.repo>https://download.eclipse.org/eclipse/updates/4.26-I-builds</comparator.repo>
+    <comparator.repo>https://download.eclipse.org/eclipse/updates/4.27-I-builds</comparator.repo>
 
     <!-- only used when Tycho snapshot repo is enabled in <pluginRepositories> further down -->
     <tycho-snapshot-repo.url>https://repo.eclipse.org/content/repositories/tycho-snapshots/</tycho-snapshot-repo.url>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <cbi-jdt-repo.url>https://repo.eclipse.org/content/repositories/eclipse-staging/</cbi-jdt-repo.url>
-    <cbi-ecj-version>3.32.0.v20220921-0942</cbi-ecj-version>
+    <cbi-ecj-version>3.32.0.v20221108-1853</cbi-ecj-version>
 
     <!--
       Production bundles are produced by ignoring the compiler warnings specified
@@ -140,7 +140,7 @@
     <tycho.mapP2Dependencies>false</tycho.mapP2Dependencies>
     
     <compare-version-with-baselines.skip>true</compare-version-with-baselines.skip>
-    <previous-release.baseline>https://download.eclipse.org/eclipse/updates/4.25/R-4.25-202208311800/</previous-release.baseline>
+    <previous-release.baseline>https://download.eclipse.org/eclipse/updates/4.26/R-4.26-202211231800/</previous-release.baseline>
 
     <!--
       Declaration of properties that contribute to the arg line for the tycho-surefire-plugin.
@@ -252,7 +252,7 @@
             <artifact>
               <groupId>org.eclipse</groupId>
               <artifactId>eclipse-sdk-prereqs</artifactId>
-              <version>4.26.0-SNAPSHOT</version>
+              <version>4.27.0-SNAPSHOT</version>
             </artifact>
           </target>
           <environments>
@@ -420,7 +420,7 @@
 		<plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>3.4.0</version>
         </plugin>
          <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -578,6 +578,11 @@
           <artifactId>xml-maven-plugin</artifactId>
           <version>1.0.2</version>
         </plugin>
+        <plugin>
+		    <groupId>org.apache.maven.plugins</groupId>
+		    <artifactId>maven-toolchains-plugin</artifactId>
+		    <version>3.1.0</version>
+		</plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -632,7 +637,7 @@
           For maintenance streams should always be "M-builds".
           Ideally, this value would be provided by the environment, see bug 489789.
         -->
-        <eclipse-p2-repo.url>https://download.eclipse.org/eclipse/updates/4.26-I-builds</eclipse-p2-repo.url>
+        <eclipse-p2-repo.url>https://download.eclipse.org/eclipse/updates/4.27-I-builds</eclipse-p2-repo.url>
       </properties>
       <repositories>
         <repository>
@@ -745,87 +750,23 @@
       </activation>
       <build>
         <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>check-has-apiTools-nature</id>
-                <phase>validate</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <exportAntProperties>true</exportAntProperties>
-                  <target>
-                    <condition property="skipAPIDescription" value="false" else="true">
-                      <!-- If the property is already set this has no effect because properties are immutable in ANT -->
-                      <and>
-                        <available file="${basedir}/META-INF/MANIFEST.MF"/>
-                        <resourcecontains resource="${basedir}/.project" substring="org.eclipse.pde.api.tools.apiAnalysisNature" />
-                      </and>
-                    </condition>
-                  </target>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.eclipse.tycho.extras</groupId>
-            <artifactId>tycho-eclipserun-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>eclipse-run</goal>
-                </goals>
-                <phase>process-classes</phase>
-                <id>build-.api_description</id>
-                <configuration>
-                  <skip>${skipAPIDescription}</skip>
-                  <work>${project.build.directory}/apigeneration-workspace</work>
-                  <applicationsArgs>
-	                  <args>-application</args>
-	                  <args>org.eclipse.pde.api.tools.apiGeneration</args>
-	                  <args>-projectName</args>
-	                  <args>${project.artifactId}_${qualifiedVersion}</args>
-	                  <args>-project</args>
-	                  <args>${project.basedir}</args>
-	                  <args>-binary</args>
-	                  <args>${tychoProject.build.outputDirectories}</args>
-	                  <args>-target</args>
-	                  <args>${project.build.directory}</args>
-                  </applicationsArgs>
-                  <dependencies>
-                    <!-- list of bundles that we need -->
-                    <dependency>
-                      <artifactId>org.eclipse.pde.api.tools</artifactId>
-                      <type>eclipse-plugin</type>
-                    </dependency>
-                    <dependency>
-                      <artifactId>org.eclipse.pde.build</artifactId>
-                      <type>eclipse-plugin</type>
-                    </dependency>
-                    <dependency>
-                      <artifactId>org.eclipse.pde.core</artifactId>
-                      <type>eclipse-plugin</type>
-                    </dependency>
-                    <dependency>
-                      <artifactId>org.eclipse.equinox.launcher</artifactId>
-                      <type>eclipse-plugin</type>
-                    </dependency>
-                    <dependency>
-                      <artifactId>org.eclipse.osgi.compatibility.state</artifactId>
-                      <type>eclipse-plugin</type>
-                    </dependency>
-                    <dependency>
-                      <artifactId>javax.annotation</artifactId>
-                      <type>eclipse-plugin</type>
-                    </dependency>
-                  </dependencies>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
+			<plugin>
+	            <groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-apitools-plugin</artifactId>
+	            <version>${tycho.version}</version>
+				<executions>
+					<execution>
+						<id>generate</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+                  			<skip>${skipAPIDescription}</skip>
+                  			<projectName>${project.artifactId}_${qualifiedVersion}</projectName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
         </plugins>
       </build>
     </profile>
@@ -1051,7 +992,7 @@
           <plugin>
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs-maven-plugin</artifactId>
-            <version>4.7.2.0</version>
+            <version>4.7.3.0</version>
             <configuration>
               <targetJDK>${java.version}</targetJDK>
               <xmlOutput>true</xmlOutput>

@@ -28,11 +28,11 @@ I-builds promote to 'S' until 'R'.
 
   jdk('adoptopenjdk-hotspot-jdk11-latest')
 
-  label('migration')
+  label('centos-latest')
 
   wrappers { //adds pre/post actions
     timestamps()
-    sshAgent('ssh://genie.releng@projects-storage.eclipse.org')
+    sshAgent('projects-storage.eclipse.org-bot-ssh')
     timeout {
       absolute(60)
     }
@@ -52,6 +52,15 @@ ${WORKSPACE}/promoteSites.sh
   }
 
   publishers {
+    downstreamParameterized {
+      trigger('tagEclipseRelease') {
+        parameters {
+          predefinedProp('tag', '$TAG')
+          predefinedProp('buildID', '$DROP_ID')
+          predefinedProp('annotation', '$SIGNOFF_BUG')
+        }
+      }
+    }
     archiveArtifacts {
       pattern('**/stage2output*/**')
     }

@@ -2,7 +2,7 @@ job('Releng/cleanupReleaseArtifacts'){
   displayName('Cleanup Release Artifacts')
   description('Cleanup major artifacts from previous releases at the beginning of a new release.')
 
-  label('migration')
+  label('centos-latest')
 
   logRotator {
     daysToKeep(1)
@@ -34,7 +34,7 @@ job('Releng/cleanupReleaseArtifacts'){
   wrappers { //adds pre/post actions
     preBuildCleanup()
     timestamps()
-    sshAgent('ssh://genie.releng@projects-storage.eclipse.org')
+    sshAgent('projects-storage.eclipse.org-bot-ssh')
   }
 
   steps {

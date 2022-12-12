@@ -1,14 +1,11 @@
-job('AutomatedTests/ep-collectResults'){
+job('Releng/ep-collectResults'){
   displayName('Collect Results')
   description('This job is to perform some summary analysis and then write unit test results to the download page.')
 
-  //disabling for now so we keep using the original ones
-  disabled()
-
   parameters {
     stringParam('triggeringJob', null, 'Name of the job to collect results from: i.e. \'ep425I-unit-cen64-gtk3-java11\'.')
-    stringParam('triggeringBuildNumber', null, 'Build number of the triggering job.')
-    stringParam('buildId', null, 'ID of the I-build being tested.')
+    stringParam('buildURL', null, 'Build URL of the triggering job.')
+    stringParam('buildID', null, 'ID of the I-build being tested.')
   }
 
   label('centos-8')
@@ -25,13 +22,13 @@ job('AutomatedTests/ep-collectResults'){
   wrappers { //adds pre/post actions
     timestamps()
     preBuildCleanup()
-    sshAgent('ssh://genie.releng@git.eclipse.org', 'ssh://genie.releng@projects-storage.eclipse.org')
+    sshAgent('git.eclipse.org-bot-ssh', 'projects-storage.eclipse.org-bot-ssh')
     timeout {
       absolute(30)
     }
     withAnt {
       installation('apache-ant-latest')
-      jdk('Default')
+      jdk('openjdk-jdk17-latest')
     }
   }
 
@@ -39,24 +36,24 @@ job('AutomatedTests/ep-collectResults'){
     shell('''
 #!/bin/bash -x
 
-buildId=$(echo $buildId|tr -d ' ')
-triggeringBuildNumber=$(echo $triggeringBuildNumber|tr -d ' ')
+buildID=$(echo $buildID|tr -d ' ')
+buildURL=$(echo $buildURL|tr -d ' ')
 triggeringJob=$(echo $triggeringJob|tr -d ' ')
 
-wget -O ${WORKSPACE}/buildproperties.shsource --no-check-certificate http://download.eclipse.org/eclipse/downloads/drops4/${buildId}/buildproperties.shsource
+wget -O ${WORKSPACE}/buildproperties.shsource --no-check-certificate http://download.eclipse.org/eclipse/downloads/drops4/${buildID}/buildproperties.shsource
 cat ${WORKSPACE}/buildproperties.shsource
 source ${WORKSPACE}/buildproperties.shsource
 
 
 epDownloadDir=/home/data/httpd/download.eclipse.org/eclipse
 dropsPath=${epDownloadDir}/downloads/drops4
-buildDir=${dropsPath}/${buildId}
+buildDir=${dropsPath}/${buildID}
 
 workingDir=${epDownloadDir}/workingDir
 
-workspace=${workingDir}/${JOB_NAME}-${BUILD_NUMBER}
+workspace=${workingDir}/${JOB_BASE_NAME}-${BUILD_NUMBER}
 
-ssh genie.releng@projects-storage.eclipse.org rm -rf ${workingDir}/${JOB_NAME}*
+ssh genie.releng@projects-storage.eclipse.org rm -rf ${workingDir}/${JOB_BASE_NAME}*
 
 ssh genie.releng@projects-storage.eclipse.org mkdir -p ${workspace}
 ssh genie.releng@projects-storage.eclipse.org cd ${workspace}
@@ -77,15 +74,12 @@ ssh genie.releng@projects-storage.eclipse.org rm -rf ${workspace}/eclipse
 
 #get requisite tools
 ssh genie.releng@projects-storage.eclipse.org wget -O ${workspace}/collectTestResults.xml https://raw.githubusercontent.com/eclipse-platform/eclipse.platform.releng.aggregator/master/cje-production/scripts/collectTestResults.xml
-ssh genie.releng@projects-storage.eclipse.org wget -O ${workspace}/genTestIndexes.xml https://raw.githubusercontent.com/eclipse-platform/eclipse.platform.releng.aggregator/master/cje-production/scripts/genTestIndexes.xml
-ssh genie.releng@projects-storage.eclipse.org wget -O ${workspace}/publish.xml https://raw.githubusercontent.com/eclipse-platform/eclipse.platform.releng.aggregator/master/eclipse.platform.releng.tychoeclipsebuilder/eclipse/buildScripts/publish.xml
+ssh genie.releng@projects-storage.eclipse.org wget -O ${workspace}/publish.xml https://raw.githubusercontent.com/eclipse-platform/eclipse.platform.releng.aggregator/master/cje-production/scripts/publish.xml
 
 cd ${WORKSPACE}
 git clone https://github.com/eclipse-platform/eclipse.platform.releng.aggregator.git
-#wget -r -l 3 -np https://raw.githubusercontent.com/eclipse-platform/eclipse.platform.releng.aggregator/master/eclipse.platform.releng.tychoeclipsebuilder/eclipse/publishingFiles
-cd git.eclipse.org/c/platform/eclipse.platform.releng.aggregator.git/plain/eclipse.platform.releng.tychoeclipsebuilder/eclipse
-cd ${WORKSPACE}/eclipse.platform.releng.aggregator/eclipse.platform.releng.tychoeclipsebuilder/eclipse
-scp -r publishingFiles genie.releng@projects-storage.eclipse.org:${workspace}/publishingFiles
+cd ${WORKSPACE}/eclipse.platform.releng.aggregator/eclipse.platform.releng.tychoeclipsebuilder
+scp -r eclipse genie.releng@projects-storage.eclipse.org:${workspace}/eclipse
 cd ${WORKSPACE}
 
 
@@ -101,25 +95,27 @@ source ./buildproperties.shsource
 devworkspace=${workspace}/workspace-antRunner
 
 ssh genie.releng@projects-storage.eclipse.org  ${javaCMD} -jar ${launcherJar} -nosplash -consolelog -debug -data $devworkspace -application org.eclipse.ant.core.antRunner -file ${workspace}/collectTestResults.xml \\
+  -DpostingDirectory=${dropsPath} \\
   -Djob=${triggeringJob} \\
-  -DbuildNumber=${triggeringBuildNumber} \\
-  -DbuildId=${buildId} \\
-  -DeclipseStream=${STREAM} \\
+  -DbuildURL=${buildURL} \\
+  -DbuildID=${buildID} \\
   -DEBUILDER_HASH=${EBUILDER_HASH}
   
 #
 devworkspace=${workspace}/workspace-updateTestResults
 
-ssh genie.releng@projects-storage.eclipse.org  ${javaCMD} -jar ${launcherJar} -nosplash -consolelog -debug -data $devworkspace -application org.eclipse.ant.core.antRunner -file ${workspace}/genTestIndexes.xml \\
+ssh genie.releng@projects-storage.eclipse.org  ${javaCMD} -jar ${launcherJar} -nosplash -consolelog -debug -data $devworkspace -application org.eclipse.ant.core.antRunner -file ${workspace}/publish.xml \\
+  -DpostingDirectory=${dropsPath} \\
   -Djob=${triggeringJob} \\
-  -DbuildId=${buildId} \\
+  -DbuildID=${buildID} \\
   -DeclipseStream=${STREAM} \\
-  -Dbasebuilder=$baseBuilderDir \\
-  -Dworkspace=${workspace}
+  -DEBuilderDir=${workspace}
+
+
 
 
 #Delete Workspace
-ssh genie.releng@projects-storage.eclipse.org rm -rf ${workingDir}/${JOB_NAME}*
+ssh genie.releng@projects-storage.eclipse.org rm -rf ${workingDir}/${JOB_BASE_NAME}*
     ''')
   }
 
@@ -127,6 +123,6 @@ ssh genie.releng@projects-storage.eclipse.org rm -rf ${workingDir}/${JOB_NAME}*
     extendedEmail {
       recipientList("sravankumarl@in.ibm.com")
     }
-    downstream('eclipse.releng.updateIndex', 'SUCCESS')
+    downstream('Releng/updateIndex', 'SUCCESS')
   }
 }

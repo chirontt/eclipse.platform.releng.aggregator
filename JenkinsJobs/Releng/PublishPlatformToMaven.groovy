@@ -6,7 +6,7 @@ job('Releng/PublishPlatformToMaven'){
     stringParam('REPO_ID', null, 'ID (buildNo) of repository created by CBI aggregator job.')
   }
 
-  label('migration')
+  label('centos-latest')
 
   jdk('openjdk-jdk11-latest')
 
@@ -17,10 +17,10 @@ job('Releng/PublishPlatformToMaven'){
   wrappers { //adds pre/post actions
     preBuildCleanup()
     credentialsBinding {
-      file('KEYRING', 'secret-subkeys.asc (secret-subkeys.asc fpr JDT')
+      file('KEYRING', 'secret-subkeys-releng.asc')
     }
     timestamps()
-    sshAgent( 'ssh://genie.releng@git.eclipse.org', 'GitHub bot (SSH)')
+    sshAgent('git.eclipse.org-bot-ssh', 'github-bot-ssh')
   }
   
   steps {
@@ -41,7 +41,7 @@ unset JAVA_TOOL_OPTIONS
 unset _JAVA_OPTIONS
 # Trust GPG keys
 gpg --batch --import "${KEYRING}"
-for fpr in $(gpg --list-keys --with-colons  | awk -F: '/fpr:/ {print $10}' | sort -u)
+for fpr in $(gpg --list-keys --with-colons  | awk -F: '/for:/ {print $10}' | sort -u)
 do
   echo -e "5\\ny\\n" |  gpg --batch --command-fd 0 --expert --edit-key ${fpr} trust
 done
@@ -60,7 +60,7 @@ git clone -b master ${GIT_URL}
 /bin/mv ${GIT_REL_PATH}/${SCRIPT} ${WORKSPACE}/
 /bin/mv ${GIT_REL_PATH}/${BASELINE} ${WORKSPACE}/
 /bin/mv ${GIT_REL_PATH}/${POM} ${WORKSPACE}/
-/bin/rmdir -p ${GIT_REL_PATH}
+/bin/rmdir -p --ignore-fail-on-non-empty ${GIT_REL_PATH}
 
 env
 
