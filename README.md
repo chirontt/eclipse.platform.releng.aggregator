@@ -1,3 +1,17 @@
+Aggregator repo for Eclipse SDK builds, including `win32.aarch64` platform
+==========================================================================
+
+This fork adds the `win32.win32.aarch64` target environment triplets to various modules' build scripts,
+to create Eclipse SDK builds for Windows on Arm64 platform. The resulting p2 platform runtime repos are
+made available in my [github.io](https://chirontt.github.io/p2/platform/) site, to supplement
+the offical [Eclipse Project](https://download.eclipse.org/eclipse/downloads/index.html) builds.
+
+This is supposed to be temporary, until the official Eclipse IDE releases start supporting Windows on Arm64 natively.
+
+Original [README.md](https://github.com/eclipse-platform/eclipse.platform.releng.aggregator#readme) text is as followed.
+
+----
+
 Aggregator repo for Eclipse SDK builds
 ======================================
 
