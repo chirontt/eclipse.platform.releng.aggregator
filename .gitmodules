@@ -10,28 +10,28 @@
   url = https://github.com/eclipse-jdt/eclipse.jdt.core.binaries.git
 [submodule "eclipse.jdt.debug"]
   path = eclipse.jdt.debug
-  url = https://github.com/eclipse-jdt/eclipse.jdt.debug.git
+  url = https://github.com/chirontt/eclipse.jdt.debug.git
 [submodule "eclipse.jdt.ui"]
   path = eclipse.jdt.ui
-  url = https://github.com/eclipse-jdt/eclipse.jdt.ui.git
+  url = https://github.com/chirontt/eclipse.jdt.ui.git
 [submodule "eclipse.pde"]
   path = eclipse.pde
-  url = https://github.com/eclipse-pde/eclipse.pde.git
+  url = https://github.com/chirontt/eclipse.pde.git
 [submodule "eclipse.platform"]
   path = eclipse.platform
-  url = https://github.com/eclipse-platform/eclipse.platform.git
+  url = https://github.com/chirontt/eclipse.platform.git
 [submodule "eclipse.platform.swt"]
   path = eclipse.platform.swt
-  url = https://github.com/eclipse-platform/eclipse.platform.swt.git
+  url = https://github.com/chirontt/eclipse.platform.swt.git
 [submodule "eclipse.platform.ui"]
   path = eclipse.platform.ui
-  url = https://github.com/eclipse-platform/eclipse.platform.ui.git
+  url = https://github.com/chirontt/eclipse.platform.ui.git
 [submodule "equinox.binaries"]
   path = equinox.binaries
-  url = https://github.com/eclipse-equinox/equinox.binaries.git
+  url = https://github.com/chirontt/equinox.binaries.git
 [submodule "equinox"]
   path = equinox
-  url = https://github.com/eclipse-equinox/equinox.git
+  url = https://github.com/chirontt/equinox.git
 [submodule "equinox.p2"]
   path = equinox.p2
-  url = https://github.com/eclipse-equinox/p2.git
+  url = https://github.com/chirontt/p2.git
