@@ -9,6 +9,7 @@
   Contributors:
   Igor Fedorenko - initial implementation
   David Williams - improvements and maintenance
+  Tue Ton - support for FreeBSD
 -->
 <project
   xmlns="http://maven.apache.org/POM/4.0.0"
@@ -42,6 +43,11 @@
           <environments>
             <environment>
               <os>linux</os>
+              <ws>gtk</ws>
+              <arch>x86_64</arch>
+            </environment>
+            <environment>
+              <os>freebsd</os>
               <ws>gtk</ws>
               <arch>x86_64</arch>
             </environment>
@@ -92,6 +98,11 @@
             <goals>
               <goal>archive-products</goal>
             </goals>
+            <configuration>
+              <formats>
+                <freebsd>tar.gz</freebsd>
+              </formats>
+            </configuration>
           </execution>
         </executions>
       </plugin>
