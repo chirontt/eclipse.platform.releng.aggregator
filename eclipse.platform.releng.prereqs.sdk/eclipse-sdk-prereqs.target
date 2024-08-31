@@ -82,6 +82,12 @@
        <unit id="org.eclipse.cdt.core.win32.x86_64" version="12.3.0.202512021919"/>
        <unit id="org.eclipse.cdt.core.win32.aarch64" version="12.3.0.202512021919"/>
     </location>
+    <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+       <repository location="https://chirontt.github.io/p2/cdt/12.3/cdt-12.3.0"/>
+       <unit id="org.eclipse.cdt.core.freebsd" version="6.1.100.202512101920"/>
+       <unit id="org.eclipse.cdt.core.freebsd.aarch64" version="12.3.0.202512101921"/>
+       <unit id="org.eclipse.cdt.core.freebsd.x86_64" version="12.3.0.202512101921"/>
+    </location>
 
     <!-- uncomment 'eclipse_home' location, with text editor, for use in Eclipse IDE
     <location path="${eclipse_home}" type="Profile"/>
