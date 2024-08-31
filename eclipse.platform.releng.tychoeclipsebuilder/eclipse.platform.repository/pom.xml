@@ -395,6 +395,7 @@ UNmHBQdtflW5G1L5fQggWG7V
               <formats>
                 <win32>zip</win32>
                 <linux>tar.gz</linux>
+                <freebsd>tar.gz</freebsd>
                 <macosx>tar.gz</macosx>
               </formats>
             </configuration>
