@@ -191,6 +191,8 @@ final Comparator<String> BY_OS_ARCH_FILE_NAME = Comparator.comparing((String fil
 		return 2;
 	} else if (OS.isMacOSArtifact(filename)) {
 		return 3;
+	} else if (OS.isFreeBSDArtifact(filename)) {
+		return 4;
 	}
 	return 100;
 }).thenComparing(Comparator.comparing(filename -> { // then sort by arch
