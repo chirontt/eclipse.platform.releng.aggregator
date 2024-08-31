@@ -277,6 +277,7 @@ public class TestResultsGenerator {
 		case "linux" -> "gtk";
 		case "macosx" -> "cocoa";
 		case "win32" -> "win32";
+		case "freebsd" -> "gtk";
 		default -> throw new IllegalArgumentException("Unsupported OS: " + os);
 		};
 		return config + "_" + os + "." + ws + "." + arch + "_" + javaVersion;
