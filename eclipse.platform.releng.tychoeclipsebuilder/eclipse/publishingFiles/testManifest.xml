@@ -18,6 +18,14 @@
         name="Windows (64 bit version)"
         fileName="eclipse-SDK-${BUILD_ID}-win32-x86_64.zip"></platform>
       <platform
+        id="SFG264"
+        name="FreeBSD (64 bit version)"
+        fileName="eclipse-SDK-${BUILD_ID}-freebsd-gtk-x86_64.tar.gz"></platform>
+      <platform
+        id="SFG2AARCH64"
+        name="FreeBSD (64 bit version for AArch64)"
+        fileName="eclipse-SDK-${BUILD_ID}-freebsd-gtk-aarch64.tar.gz"></platform>
+      <platform
         id="SLG264"
         name="Linux (64 bit version)"
         fileName="eclipse-SDK-${BUILD_ID}-linux-gtk-x86_64.tar.gz"></platform>
@@ -62,6 +70,14 @@
         id="PWX8664"
         name="Windows (64 bit version)"
         fileName="eclipse-platform-${BUILD_ID}-win32-x86_64.zip"></platform>
+      <platform
+        id="PFG264"
+        name="FreeBSD (64 bit version)"
+        fileName="eclipse-platform-${BUILD_ID}-freebsd-gtk-x86_64.tar.gz"></platform>
+      <platform
+        id="PFG2AARCH64"
+        name="FreeBSD (64 bit version for AArch64)"
+        fileName="eclipse-platform-${BUILD_ID}-freebsd-gtk-aarch64.tar.gz"></platform>
       <platform
         id="PLG264"
         name="Linux (64 bit version)"
@@ -108,6 +124,14 @@
         id="SWTWX86_64"
         name="Windows (64 bit version)"
         fileName="swt-${BUILD_ID}-win32-win32-x86_64.zip"></platform>
+      <platform
+        id="SWTFG64"
+        name="FreeBSD (64 bit version)"
+        fileName="swt-${BUILD_ID}-gtk-freebsd-x86_64.zip"></platform>
+      <platform
+        id="SWTFG2AARCH64"
+        name="FreeBSD (64 bit version for AArch64)"
+        fileName="swt-${BUILD_ID}-gtk-freebsd-aarch64.zip"></platform>
       <platform
         id="SWTLG64"
         name="Linux (64 bit version)"
