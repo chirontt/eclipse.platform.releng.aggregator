@@ -33,6 +33,10 @@ public class OS {
 		return name.contains("-macosx");
 	}
 
+	public static boolean isFreeBSDArtifact(String name) {
+		return name.contains("-freebsd");
+	}
+
 	public static boolean isMacTarGZ(String f) {
 		return OS.isMacOSArtifact(f.toString()) && f.endsWith(".tar.gz");
 	}
