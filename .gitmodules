@@ -22,10 +22,12 @@
   url = https://github.com/eclipse-platform/eclipse.platform.git
 [submodule "eclipse.platform.swt"]
   path = eclipse.platform.swt
-  url = https://github.com/eclipse-platform/eclipse.platform.swt.git
+  url = https://github.com/chirontt/eclipse.platform.swt.git
+  branch = R4_30_maintenance_freebsd
 [submodule "eclipse.platform.swt.binaries"]
   path = eclipse.platform.swt.binaries
-  url = https://github.com/eclipse-platform/eclipse.platform.swt.binaries.git
+  url = https://github.com/chirontt/eclipse.platform.swt.binaries.git
+  branch = R4_30_maintenance_freebsd
 [submodule "eclipse.platform.ui"]
   path = eclipse.platform.ui
   url = https://github.com/eclipse-platform/eclipse.platform.ui.git
