@@ -19,6 +19,7 @@
 
    <launcher name="rt">
       <linux icon="rt.xpm"/>
+      <freebsd icon="rt.xpm"/>
       <macosx icon="rt.icns"/>
       <win useIco="true">
          <ico path="rt.ico"/>
